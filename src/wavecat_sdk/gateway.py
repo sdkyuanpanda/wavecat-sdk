@@ -19,6 +19,9 @@ params) to and from your model.
 from __future__ import annotations
 
 import json
+import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from typing import Any
 
 import httpx
@@ -26,6 +29,8 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
 
 from wavecat_sdk.config import Settings
+
+logger = logging.getLogger("wavecat_sdk")
 
 
 def _sanitize(body: dict[str, Any], settings: Settings) -> dict[str, Any]:
@@ -45,15 +50,20 @@ def _sanitize(body: dict[str, Any], settings: Settings) -> dict[str, Any]:
 
 def create_app(settings: Settings) -> FastAPI:
     """Build the gateway app bound to a given upstream."""
-    app = FastAPI(title="wavecat-sdk gateway")
     client = httpx.AsyncClient(timeout=settings.request_timeout)
 
-    @app.on_event("shutdown")
-    async def _close() -> None:
-        await client.aclose()
+    @asynccontextmanager
+    async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+        # Own the upstream HTTP client for the app's lifetime; close it on shutdown.
+        try:
+            yield
+        finally:
+            await client.aclose()
+
+    app = FastAPI(title="wavecat-sdk gateway", lifespan=lifespan)
 
     @app.get("/health")
-    async def health() -> dict:
+    async def health() -> dict[str, str]:
         return {"status": "ok", "upstream": settings.upstream_url}
 
     @app.get("/v1/models")
@@ -62,6 +72,7 @@ def create_app(settings: Settings) -> FastAPI:
         try:
             r = await client.get(settings.upstream("/models"), headers=settings.auth_headers)
         except httpx.RequestError as exc:
+            logger.warning("upstream unreachable on /v1/models: %s", exc)
             return JSONResponse({"error": f"upstream unreachable: {exc}"}, status_code=503)
         return Response(content=r.content, status_code=r.status_code, media_type="application/json")
 
@@ -83,6 +94,7 @@ def create_app(settings: Settings) -> FastAPI:
             try:
                 r = await client.post(url, json=body, headers=headers)
             except httpx.RequestError as exc:
+                logger.warning("upstream unreachable on /v1/chat/completions: %s", exc)
                 return JSONResponse({"error": f"upstream unreachable: {exc}"}, status_code=503)
             return Response(
                 content=r.content,
@@ -99,6 +111,7 @@ def create_app(settings: Settings) -> FastAPI:
                         if chunk:
                             yield chunk
             except httpx.RequestError as exc:
+                logger.warning("upstream unreachable mid-stream: %s", exc)
                 err = {"error": {"message": f"upstream unreachable: {exc}", "type": "gateway"}}
                 yield f"data: {json.dumps(err)}\n\n".encode()
                 yield b"data: [DONE]\n\n"

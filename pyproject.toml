@@ -1,26 +1,79 @@
 [build-system]
-requires = ["setuptools>=68", "wheel"]
+requires = ["setuptools>=77", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "wavecat-sdk"
-version = "0.1.0"
-description = "Connect your own OpenAI-compatible backend to wavecat."
+description = "Connect your own OpenAI-compatible backend (llama.cpp, vLLM) to wavecat."
 readme = "README.md"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 authors = [{ name = "Samuel Yuan" }]
+keywords = ["wavecat", "openai", "gateway", "proxy", "llm", "llama.cpp", "vllm"]
+dynamic = ["version"]
 dependencies = [
     "fastapi>=0.110",
     "uvicorn[standard]>=0.27",
     "httpx>=0.27",
 ]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "respx>=0.21",
+    "ruff>=0.6",
+    "build>=1.2",
+    "twine>=5",
+]
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.26",
+]
 
 [project.scripts]
 wavecat-sdk = "wavecat_sdk.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sdkyuanpanda/wavecat-sdk"
+Documentation = "https://sdkyuanpanda.github.io/wavecat-sdk/"
+Repository = "https://github.com/sdkyuanpanda/wavecat-sdk"
+Issues = "https://github.com/sdkyuanpanda/wavecat-sdk/issues"
+Changelog = "https://github.com/sdkyuanpanda/wavecat-sdk/blob/main/CHANGELOG.md"
+
+[tool.setuptools.dynamic]
+version = { attr = "wavecat_sdk.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.setuptools.package-data]
+wavecat_sdk = ["py.typed"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

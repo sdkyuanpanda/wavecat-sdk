@@ -3,7 +3,12 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
+#: Top-level request-body keys dropped before forwarding by default. wavecat sends
+#: llama.cpp-flavored extras (``cache_prompt``) that a stricter OpenAI server
+#: (e.g. vLLM) may reject with a 400.
+DEFAULT_STRIP_KEYS: tuple[str, ...] = ("cache_prompt",)
 
 
 @dataclass
@@ -28,7 +33,7 @@ class Settings:
     model: str | None = None
     host: str = "127.0.0.1"
     port: int = 8800
-    strip_keys: tuple[str, ...] = ("cache_prompt",)
+    strip_keys: tuple[str, ...] = DEFAULT_STRIP_KEYS
     request_timeout: float = 600.0
 
     def __post_init__(self) -> None:
@@ -46,7 +51,7 @@ class Settings:
 def from_env() -> Settings:
     """Build :class:`Settings` from ``WAVECAT_SDK_*`` env vars (CLI flags override)."""
     strip = os.getenv("WAVECAT_SDK_STRIP_KEYS")
-    strip_keys = tuple(k.strip() for k in strip.split(",") if k.strip()) if strip else ("cache_prompt",)
+    strip_keys = tuple(k.strip() for k in strip.split(",") if k.strip()) if strip else DEFAULT_STRIP_KEYS
     return Settings(
         upstream_url=os.getenv("WAVECAT_SDK_UPSTREAM", "http://127.0.0.1:8000/v1"),
         upstream_key=os.getenv("WAVECAT_SDK_KEY", ""),

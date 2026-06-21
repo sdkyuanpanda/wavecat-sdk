@@ -5,13 +5,20 @@
 # Wavecat Software Development Kit (SDK)
 ## connect your own backend :)
 
+<p align="center">
+  <a href="https://pypi.org/project/wavecat-sdk/"><img src="https://img.shields.io/pypi/v/wavecat-sdk.svg" alt="PyPI" /></a>
+  <a href="https://pypi.org/project/wavecat-sdk/"><img src="https://img.shields.io/pypi/pyversions/wavecat-sdk.svg" alt="Python versions" /></a>
+  <a href="https://github.com/sdkyuanpanda/wavecat-sdk/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/sdkyuanpanda/wavecat-sdk/actions/workflows/ci.yml"><img src="https://github.com/sdkyuanpanda/wavecat-sdk/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="https://sdkyuanpanda.github.io/wavecat-sdk/"><img src="https://img.shields.io/badge/docs-mkdocs-blue.svg" alt="Docs" /></a>
+</p>
+
 Run wavecat's **heavy model** on your own hardware. The SDK is a tiny, always-on
 **gateway** that presents a stable OpenAI-compatible endpoint on localhost and
 forwards every request to *your* model server (llama.cpp, vLLM, …). Point
 wavecat at the gateway and it routes the interactive heavy work — **chat, agent,
 and code** turns (plus optional screenshot Q&A) — there instead of the bundled
-local 35B. Everything else (the local 4B, OCR, embeddings, and the background
-memory/memex updates) keeps running on-device, unchanged.
+local 35B.
 
 ```
 wavecat ──/v1──► [wavecat-sdk gateway :8800] ──/v1──► your llama.cpp / vLLM
@@ -21,6 +28,21 @@ wavecat ──/v1──► [wavecat-sdk gateway :8800] ──/v1──► your l
 > payloads — prompts, tool *schemas*, tool *results as text*, sampling params.
 > It never runs a wavecat tool and never touches your memex/screen data. Tools
 > always execute inside wavecat; this process just generates tokens.
+
+📖 **Full documentation:** <https://sdkyuanpanda.github.io/wavecat-sdk/>
+
+## Why wavecat-sdk?
+
+- **Your hardware, your model** — offload the heavy turns to a GPU box or any
+  OpenAI-compatible server you already run.
+- **One command, always on** — it's a CLI; `pip install`, `wavecat-sdk serve`,
+  done. Nothing to wire up in code.
+- **Minimal exposure** — only OpenAI chat payloads cross the gateway; it never
+  runs tools or touches your data.
+- **Drop-in OpenAI compatibility** — streaming SSE relayed unchanged, so wavecat
+  sees the exact deltas it expects.
+- **Graceful fallback** — if the gateway/upstream is unreachable, wavecat falls
+  back to the local 35B, so turns never hard-fail.
 
 ---
 
@@ -71,9 +93,9 @@ In wavecat → **Settings → Backend**:
    screenshot questions stay on the local 35B.
 5. **Test connection** to verify the chain, then **Save**.
 
-Your backend serves the interactive work (chat, agent, code). The background
-memory (memex) always stays on the local model, so you don't need to worry about
-grammar / structured-output support.
+Your backend serves the interactive work (chat, agent, code). The background memory management always stays on the local model, since that requires special grammar and other protocols.
+
+We are working improving how much processing can be offloaded to your own local model so that you can run wavecat on even less capable laptops!
 
 If the gateway/upstream is ever unreachable, wavecat silently falls back to the
 local 35B, so turns never hard-fail.
