@@ -26,7 +26,7 @@ wavecat ──/v1──► [wavecat-sdk gateway :8800] ──/v1──► your l
 
 > **Minimal exposure.** The gateway only ever sees OpenAI chat-completion
 > payloads — prompts, tool *schemas*, tool *results as text*, sampling params.
-> It never runs a wavecat tool and never touches your memex/screen data. Tools
+> It never runs a wavecat tool and never touches your screen data. Tools
 > always execute inside wavecat; this process just generates tokens.
 
 📖 **Full documentation:** <https://sdkyuanpanda.github.io/wavecat-sdk/>
