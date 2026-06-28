@@ -3,7 +3,7 @@
 </p>
 
 # Wavecat Software Development Kit (SDK)
-## connect your own backend :)
+## connect your own backend :) [Work in Progress]
 
 <p align="center">
   <a href="https://pypi.org/project/wavecat-sdk/"><img src="https://img.shields.io/pypi/v/wavecat-sdk.svg" alt="PyPI" /></a>
@@ -26,7 +26,7 @@ wavecat ──/v1──► [wavecat-sdk gateway :8800] ──/v1──► your l
 
 > **Minimal exposure.** The gateway only ever sees OpenAI chat-completion
 > payloads — prompts, tool *schemas*, tool *results as text*, sampling params.
-> It never runs a wavecat tool and never touches your screen data. Tools
+> It never runs a wavecat tool and never touches your local data. Tools
 > always execute inside wavecat; this process just generates tokens.
 
 📖 **Full documentation:** <https://sdkyuanpanda.github.io/wavecat-sdk/>
@@ -93,7 +93,7 @@ In wavecat → **Settings → Backend**:
    screenshot questions stay on the local 35B.
 5. **Test connection** to verify the chain, then **Save**.
 
-Your backend serves the interactive work (chat, agent, code). The background memory management always stays on the local model, since that requires special grammar and other protocols.
+Your backend serves the interactive work (chat, agent, code). Managing context always stays on the local model, since that requires special grammar and other protocols.
 
 We are working improving how much processing can be offloaded to your own local model so that you can run wavecat on even less capable laptops!
 

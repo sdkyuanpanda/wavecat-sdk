@@ -58,8 +58,8 @@ In wavecat → **Settings → Backend**:
    screenshot questions stay on the local 35B.
 5. **Test connection** to verify the chain, then **Save**.
 
-Your backend serves the interactive work (chat, agent, code). Background memory
-management always stays on the local model, since that requires special grammar
+Your backend serves the interactive work (chat, agent, code). Managing context
+always stays on the local model, since that requires special grammar
 and other protocols. If the gateway/upstream is ever unreachable, wavecat
 silently falls back to the local 35B, so turns never hard-fail.
 

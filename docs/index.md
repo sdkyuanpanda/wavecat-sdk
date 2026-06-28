@@ -29,7 +29,7 @@ wavecat-sdk serve --upstream http://127.0.0.1:8000/v1 --model my-model
 - **Minimal exposure by design.** The gateway only ever sees OpenAI
   chat-completion payloads — prompts, tool *schemas*, tool *results as text*, and
   sampling params. It never runs a wavecat tool and never touches your
-  memex/screen data. Tools always execute inside wavecat; this process only
+  local data. Tools always execute inside wavecat; this process only
   generates tokens.
 - **Drop-in OpenAI compatibility.** Speaks `/v1/chat/completions`, `/v1/models`,
   and `/health`. Streaming SSE frames are relayed through unchanged, so wavecat
