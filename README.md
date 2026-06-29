@@ -52,6 +52,8 @@ wavecat ──/v1──► [wavecat-sdk gateway :8800] ──/v1──► your l
 pip install -e .          # from this repo (or `pip install wavecat-sdk` once published)
 ```
 
+WIP not published to pypi yet.
+
 Requires Python ≥ 3.10. Pulls in `fastapi`, `uvicorn`, `httpx`.
 
 ## Run
